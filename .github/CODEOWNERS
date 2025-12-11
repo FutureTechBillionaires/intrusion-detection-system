@@ -1,0 +1,59 @@
+# ================================
+
+# 👥 CODE OWNERSHIP CONFIGURATION
+
+# ================================
+
+# This file ensures that only the correct team
+
+# can approve changes in specific directories.
+
+# GitHub Free supports this fully.
+
+#
+
+# Format:
+
+# <path> <user/team>
+
+# ================================
+
+# BACKEND OWNERS
+
+# Anything in the backend folder must be approved by the Backend team or DevOps
+
+/backend/ @FutureTechBillionaires/backend @FutureTechBillionaires/devops
+
+# FRONTEND OWNERS
+
+# React dashboard and UI components
+
+/frontend/ @FutureTechBillionaires/frontend @FutureTechBillionaires/devops
+
+# MACHINE LEARNING OWNERS
+
+# Models, training scripts, notebooks
+
+/ml-model/ @FutureTechBillionaires/ai @FutureTechBillionaires/Cybersecurity @FutureTechBillionaires/devops
+
+# SECURITY DOCUMENTATION AND SCRIPTS
+
+/docs/security/ @FutureTechBillionaires/cybersecurity @FutureTechBillionaires/devops
+
+# INFRASTRUCTURE & CONFIG
+
+# DevOps owns Docker, K8s, CI/CD, cloud configs
+
+/infrastructure/ @FutureTechBillionaires/devops
+
+# GLOBAL DOCS (anyone can suggest, but DevOps reviews)
+
+/docs/ @FutureTechBillionaires/devops
+
+# ROOT LEVEL FILES (CI, docker-compose, README)
+
+# DevOps reviews these
+
+/README.md @FutureTechBillionaires/devops
+/docker-compose.yml @FutureTechBillionaires/devops
+/.github/ @FutureTechBillionaires/devops
