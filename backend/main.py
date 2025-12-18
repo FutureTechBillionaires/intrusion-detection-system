@@ -1,4 +1,74 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from core.config import settings
+
+from routers import log
+from db.database import create_tables
+
+create_tables()
+
+app = FastAPI(
+    title="AI-Powered Intrusion Detection System API",
+    description="Backend API for real-time threat detection and monitoring",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOW_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def read_root():
+    return {"message": "IDS Backend Running"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+app.include_router(log.router, prefix=settings.API_PREFIX)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app="main:app", host="127.0.0.1", port=8000, reload=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -253,3 +323,5 @@ async def internal_error_handler(request, exc):
         "message": "An unexpected error occurred",
         "details": str(exc)
     }
+    
+    '''
