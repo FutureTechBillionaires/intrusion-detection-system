@@ -1,0 +1,123 @@
+                            #FULL DEMO – IDS + Automated Response
+                            # (log generator, ids detector ve ids response birlesdirilmis hali commentsiz)
+
+
+
+                    #Fake log yaratmaq (log_generator.py)
+import random
+import time
+
+ips = ["192.168.1.23", "10.0.0.5", "192.168.1.10", "172.16.0.8"]
+ports = [22, 80, 443, 8080, 3306]
+
+def generate_log():
+    ip = random.choice(ips)
+    port = random.choice(ports)
+    status = random.choice(["SUCCESS", "FAILED"])
+    return f"{time.time()} | IP={ip} | PORT={port} | STATUS={status}"
+
+with open("network_logs.log", "w") as file:
+    for _ in range(100):
+        file.write(generate_log() + "\n")
+
+print("Log file generated.")
+
+            #Run etmek ucun: python log_generator.py
+            
+            
+                                #Output: network_logs.log hazırdır
+                                
+
+
+
+                                
+                            #Attack Log Simulation (Hücum loglarının simulyasiyası.   IDS ilə analiz    ids_detector.py:  )
+
+from collections import defaultdict
+
+LOG_FILE = "network_logs.log"
+
+failed_logins = defaultdict(int)
+port_access = defaultdict(set)
+suspicious_ips = set()
+
+BRUTE_FORCE_THRESHOLD = 5
+PORT_SCAN_THRESHOLD = 4
+
+with open(LOG_FILE, "r") as file:
+    for line in file:
+        parts = line.strip().split(" | ")
+        ip = parts[1].split("=")[1]
+        port = parts[2].split("=")[1]
+        status = parts[3].split("=")[1]
+
+        if status == "FAILED":
+            failed_logins[ip] += 1
+        port_access[ip].add(port)
+
+for ip in failed_logins:
+    if failed_logins[ip] >= BRUTE_FORCE_THRESHOLD:
+        suspicious_ips.add(ip)
+        print(f"[ALERT] Brute-force detected from {ip}")
+
+for ip in port_access:
+    if len(port_access[ip]) >= PORT_SCAN_THRESHOLD:
+        suspicious_ips.add(ip)
+        print(f"[ALERT] Port scanning detected from {ip}")
+
+# Save suspicious IPs to file for automated response
+with open("blocked_ips.txt", "w") as f:
+    for ip in suspicious_ips:
+        f.write(ip + "\n")
+
+            #Run etmek ucun: python ids_detector.py
+            
+                                #Output: Terminalda hücumlar göstəriləcək, blocked_ips.txt yaradılacaq.
+
+
+
+
+
+
+
+                                #Automated Response – Linux   (auto_response.py)
+
+import os
+
+with open("blocked_ips.txt", "r") as file:
+    ips = file.readlines()
+
+for ip in ips:
+    ip = ip.strip()
+    print(f"Blocking IP: {ip}")
+    os.system(f"sudo iptables -A INPUT -s {ip} -j DROP")
+    with open("ids_alerts.log", "a") as log:
+        log.write(f"Blocked IP: {ip}\n")
+
+                    #Output: IP-lər bloklanacaq ve ids_alerts.log yaradılacaq
+                    
+#Run etmek ucun: sudo python auto_response.py
+
+
+                                
+                                
+                                
+                                #Short notes
+# check blocked IPs:    sudo iptables -L
+# check alert log:       cat ids_alerts.log
+# Output:   Blocked IP: 192.168.1.23      Blocked IP: 10.0.0.5
+
+                                #Summary 
+# log_generator.py → fake traffic
+# ids_detector.py → suspicious IPs aşkar edilir
+# auto_response.py → Linux bloklayır, alert log yazır
+
+                    #For interviews: I built an AI-assisted IDS system with automated Linux responses, detecting brute-force and port-scan attacks in real-time
+                    
+                        
+                   
+                    
+                    
+                    
+                    
+                    
